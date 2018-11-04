@@ -3,8 +3,7 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import purple from '@material-ui/core/colors/purple';
 import green from '@material-ui/core/colors/green';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { ApplicationBar } from './Components/Layout/ApplicationBar';
-import { ApplicationDrawer } from './Components/Layout/ApplicationDrawer';
+import { Layout } from "./Components/Layout";
 import { createMyTheme } from "./styles/createMyTheme";
 
 
@@ -24,8 +23,9 @@ class App extends Component {
       <div className="App">
           <MuiThemeProvider theme={theme}>
               <CssBaseline />
-              <ApplicationBar />
-              <ApplicationDrawer />
+              <Layout>
+                  <div>content</div>
+              </Layout>
           </MuiThemeProvider>
       </div>
     );
