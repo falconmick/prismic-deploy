@@ -9,7 +9,7 @@
 
 export interface PrismicHook {
     type?:       string;
-    secret?:     string;
+    secret?:     string | null;
     masterRef?:  string;
     domain?:     string;
     apiUrl?:     string;

@@ -1,19 +1,42 @@
 service:
   name: aws-node
 
-# Add the serverless-webpack plugin
+custom:
+  defaultRegion: ap-southeast-2
+
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-step-functions
+  - serverless-pseudo-parameters
 
 provider:
   name: aws
   runtime: nodejs8.10
+  region: ${opt:region, self:custom.defaultRegion}
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          method: post
-          path: /
+  readPrismicHook:
+    handler: src/prismic/prismicWebhook.handle
+  logOutput:
+    handler: src/debug/log.handle
+
+stepFunctions:
+  stateMachines:
+    processPrismicHook:
+      events:
+        - http:
+            path: webhook
+            method: post
+      definition:
+        Comment: "Given a Prismic Webhook, will generate releases for master and or staging branches"
+        StartAt: PrismicWebhook
+        States:
+          PrismicWebhook:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-readPrismicHook
+            Next: LogOutput
+          LogOutput:
+            Type: Task
+            Resource: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:${self:service}-${opt:stage}-logOutput
+            End: true
